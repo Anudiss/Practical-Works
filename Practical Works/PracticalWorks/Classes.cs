@@ -35,9 +35,29 @@ namespace Practical_Works.PracticalWorks
             return $"{cone}:\n  S(осн) = {cone.SquareBase():0.00}  S(бок) = {cone.SquareSurface():0.00}  S(полн) = {cone.SquareFull():0.00}";
         }
 
+        private static string CarPrice(Car car)
+        {
+            return $"{car}:\n  Цена с 5% скидкой {car.Discount():0.00}  Цена увеличина на 10% {car.RaisePrice(.1):0.00}";
+        }
+
         public static void Task2()
         {
+            List<Car> cars = new();
+            object[] input;
+            int carCount = (int)Menu.CreateInputMenu("Введите количество машин", ("Количество", InputType.Int)).First();
+            for (int i = 0; i < carCount; i++)
+            {
+                if (cars.Count > 0)
+                    Menu.CreateTextMenu("Машины", $"{string.Join("\n", cars)}", 0, 0, 30);
+                input = Menu.CreateInputMenu("Введите марку, цвет и цену машины", ("Марка", InputType.String), ("Цвет", InputType.String), ("Цена", InputType.Double)).ToArray();
+                cars.Add(new((string)input[0], (string)input[1], (double)input[2]));
+                Menu.CreateTextMenu("Машины", $"{string.Join("\n", cars)}", 0, 0, 30);
+            }
 
+            string[] carsPresent = cars.Select(e => CarPrice(e)).ToArray();
+            int width = Math.Min(80, carsPresent.Max(e => e.Length));
+
+            Menu.CreateConfirmMenu("Задание 2", $"{string.Join("\n", carsPresent)}", width);
         }
     }
 
@@ -79,7 +99,7 @@ namespace Practical_Works.PracticalWorks
     class Car 
     {
         private readonly string brand, color;
-        private readonly double price;
+        private double price;
 
         private readonly int ID;
         private static int ID_counter = 1;
@@ -92,14 +112,13 @@ namespace Practical_Works.PracticalWorks
             ID = ID_counter++;
         }
 
-        public double Discount()
+        public double Discount() => price - price * 0.05;
+
+        public double RaisePrice(double percent)
         {
-            return price * 0.05;
+            return price *= 1 + percent;
         }
 
-        public override string ToString()
-        {
-            return $"Car{ID}({brand}, {color}, {price})";
-        }
+        public override string ToString() => $"Car{ID}({brand}, {color}, {price})";
     }
 }
