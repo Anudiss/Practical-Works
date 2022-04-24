@@ -73,6 +73,7 @@ namespace Practical_Works
 
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.Title = "Практические работы";
             int practical;
             while((practical = Menu.CreateMenu("Практические работы", practicalWorks)) != -1)
@@ -168,6 +169,14 @@ namespace Practical_Works
                    select selector(matrix[x, y], x, y);
         }
 
+        public static List<(T e, int i)> Where<T>(this List<T> list, Func<T, int, bool> preducate)
+        {
+            var query = from i in Enumerable.Range(0, list.Count)
+                        where preducate(list[i], i)
+                        select (list[i], i);
+            return query.ToList();
+        }
+
         public static IEnumerable<(T, int, int)> Where<T>(this T[,] matrix, Func<T, int, int, bool> preducate) {
             return from x in Enumerable.Range(0, matrix.GetLength(0))
                    from y in Enumerable.Range(0, matrix.GetLength(1))
@@ -189,6 +198,25 @@ namespace Practical_Works
         {
             foreach (var e in elements)
                 stack.Push(e);
+        }
+    
+        public static string Reapet(this string text, int count)
+        {
+            return string.Join("", Enumerable.Repeat(text, count));
+        }
+
+        public static string Center(this string text, int maxLength)
+        {
+            if (maxLength < text.Length)
+                return text;
+            int offset = (maxLength - text.Length) / 2;
+            string centered = $"{" ".Reapet(offset)}{text}{" ".Reapet(offset)}";
+            if (centered.Length < maxLength)
+                return centered + " ".Reapet(maxLength - centered.Length);
+            else if (centered.Length > maxLength)
+                return centered[0..^2];
+            else
+                return centered;
         }
     }
 }
